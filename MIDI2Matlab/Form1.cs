@@ -10,11 +10,20 @@ using System.Windows.Forms;
 
 namespace MIDI2Matlab
 {
-    public partial class Form1 : Form
+    public partial class mainWindow : Form
     {
-        public Form1()
+        public mainWindow()
         {
             InitializeComponent();
+        }
+
+        private void openButton_Click(object sender, EventArgs e)
+        {
+            if(openFileDialog1.ShowDialog() == DialogResult.OK)
+            {
+
+            }
+
         }
     }
 }
