@@ -58,6 +58,7 @@
             this.infoTextBox.Multiline = true;
             this.infoTextBox.Name = "infoTextBox";
             this.infoTextBox.ReadOnly = true;
+            this.infoTextBox.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
             this.infoTextBox.Size = new System.Drawing.Size(547, 325);
             this.infoTextBox.TabIndex = 1;
             // 
