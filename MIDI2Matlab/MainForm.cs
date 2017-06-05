@@ -24,9 +24,16 @@ namespace MIDI2Matlab
         {
             if(openFileDialog1.ShowDialog() == DialogResult.OK)
             {
+                infoTextBox.Text = "";
                 midiFile = MidiFile.Read(openFileDialog1.FileName);
-                DisplayMidiInfo();
+                //DisplayMidiInfo();
+                DisplayMatlabInfo();
             }
+        }
+
+        void DisplayMatlabInfo()
+        {
+            infoTextBox.Text += Midi2MatlabConverter.GetAllTracks(midiFile);
         }
 
         void DisplayMidiInfo()
@@ -34,11 +41,11 @@ namespace MIDI2Matlab
             infoTextBox.Text = "";
             infoTextBox.Text += GetGlobalInfoString();
             // Change this to change # of tracks that are printed.
-            int maxChunkPrintCount = 3;
+            int maxChunkPrintCount = 1;
             int chunkPrintCount = Math.Min(midiFile.Chunks.Count, maxChunkPrintCount);
             for (int i = 0; i < chunkPrintCount; i++)
             {
-                infoTextBox.Text += GetChunkInfoString(i);
+                infoTextBox.Text += GetChunkInfoString(i) + "\r\n\r\n";
             }
         }
 
@@ -71,7 +78,7 @@ namespace MIDI2Matlab
             TrackChunk track = (TrackChunk)midiFile.Chunks[chunkIndex];
             for(int i = 0; i < track.Events.Count; i++)
             {
-                str += "\t" + track.Events[i].ToString() + "\r\n";
+                str += "\t" + track.Events[i].ToString() + "    (" + track.Events[i].DeltaTime + ")\r\n";
             }
             str = GetNullCleansed(str);
             return str;
