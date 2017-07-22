@@ -161,7 +161,8 @@ namespace MIDI2Matlab
                         noteValues.Add(midiNoteValue - 8);
                         float velocity = ((NoteOnEvent)track.Events[i]).Velocity / 127f;
                         velocities.Add(velocity);
-                        vowelsBuilder.Append("oh");
+                        // Set vowel based on midi channel.
+                        vowelsBuilder.Append(GetVowel(((NoteOnEvent)track.Events[i]).Channel));
                         startPulses.Add(currentTick + track.Events[i].DeltaTime + 1);
                         // Find durration.
                         bool endFound = false;
@@ -208,6 +209,25 @@ namespace MIDI2Matlab
             }
             str += "pulseDuration = " + pulseDuration + "\r\n";
             return str;
+        }
+
+        private static string GetVowel(FourBitNumber midiChannel)
+        {
+            switch (midiChannel)
+            {
+                case 0:
+                    return "eh";
+                case 1:
+                    return "ee";
+                case 2:
+                    return "ah";
+                case 3:
+                    return "oh";
+                case 4:
+                    return "oo";
+                default:
+                    return "oh";
+            }
         }
 
         private static long GetTempo(MidiFile midiFile)
