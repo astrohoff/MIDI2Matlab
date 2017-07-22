@@ -9,6 +9,7 @@ namespace MIDI2Matlab
 {
     class Midi2MatlabConverter
     {
+        // Deprecated I think ...?
         public static string GetFirstTrackNotesOnly(MidiFile midiFile)
         {
             string str = "";
@@ -57,6 +58,7 @@ namespace MIDI2Matlab
             return str;
         }
 
+        // Deprecated I think ...?
         public static string GetFirstTrackWithTiming(MidiFile midiFile)
         {
             string str = "";
@@ -146,6 +148,7 @@ namespace MIDI2Matlab
                 List<long> durrations = new List<long>();
                 List<long> startPulses = new List<long>();
                 List<float> velocities = new List<float>();
+                StringBuilder vowelsBuilder = new StringBuilder();
                 TrackChunk track = (TrackChunk)midiFile.Chunks[trackIndex];
                 long currentTick = 0;
                 Console.WriteLine("NoteOff type: " + typeof(NoteOffEvent));
@@ -153,34 +156,42 @@ namespace MIDI2Matlab
                 {
                     if (track.Events[i] is NoteOnEvent)
                     {
+                        // This is a new note.
                         int midiNoteValue = ((NoteOnEvent)track.Events[i]).NoteNumber;
                         noteValues.Add(midiNoteValue - 8);
                         float velocity = ((NoteOnEvent)track.Events[i]).Velocity / 127f;
                         velocities.Add(velocity);
+                        vowelsBuilder.Append("oh");
                         startPulses.Add(currentTick + track.Events[i].DeltaTime + 1);
                         // Find durration.
                         bool endFound = false;
                         int channel = ((NoteOnEvent)track.Events[i]).Channel;
-                        long durration = 0;
+                        long duration = 0;
                         for (int j = i + 1; j < i + 5 && !endFound; j++)
                         {
-                            durration += track.Events[j].DeltaTime;
+                            duration += track.Events[j].DeltaTime;
+                            // Explicit note off.
                             if (track.Events[j].GetType().Equals(typeof(NoteOffEvent)))
                             {
                                 NoteOffEvent noteEvent = ((NoteOffEvent)track.Events[j]);
                                 endFound = noteEvent.NoteNumber == midiNoteValue && noteEvent.Channel == channel;
+
+                                // This is a fix for a repeated note having a duration of 0.
+                                // This is kind of hacky; the underlying cause of this problem should be
+                                // investigated at some point.
+                                if (endFound && duration == 0 && track.Events.Count > j + 1)
+                                {
+                                   duration += track.Events[j + 1].DeltaTime;
+                                }
                             }
+                            // Another note of the same value starting.
                             else if (track.Events[j] is NoteOnEvent)
                             {
                                 NoteOnEvent noteEvent = ((NoteOnEvent)track.Events[j]);
                                 endFound = noteEvent.NoteNumber == midiNoteValue && noteEvent.Channel == channel;
                             }
-
-                            if (endFound)
-                            {
-                            }
                         }
-                        durrations.Add(durration);
+                        durrations.Add(duration);
                     }
                     currentTick += track.Events[i].DeltaTime;
                 }
@@ -191,8 +202,9 @@ namespace MIDI2Matlab
                 str += string.Join(",", Array.ConvertAll(durrations.ToArray(), x => x.ToString())) + "]\r\n";
                 str += "voices(" + (trackIndex + 1) + ").startPulses = [";
                 str += string.Join(",", Array.ConvertAll(startPulses.ToArray(), x => x.ToString())) + "]\r\n";
-                str += "voices(" + (trackIndex + 1) + ").velocities = [";
-                str += string.Join(",", Array.ConvertAll(velocities.ToArray(), x => x.ToString())) + "]\r\n";
+                //str += "voices(" + (trackIndex + 1) + ").velocities = [";
+                //str += string.Join(",", Array.ConvertAll(velocities.ToArray(), x => x.ToString())) + "]\r\n";
+                str += "voices(" + (trackIndex + 1) + ").vowels = '" + vowelsBuilder.ToString() + "'\r\n";
             }
             str += "pulseDuration = " + pulseDuration + "\r\n";
             return str;
