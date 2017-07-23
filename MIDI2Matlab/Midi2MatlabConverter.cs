@@ -141,7 +141,7 @@ namespace MIDI2Matlab
                 throw new Exception("Unsuported time format.");
             }
             // Process each MIDI track.
-            for (int trackIndex = 0; trackIndex < midiFile.Chunks.Count; trackIndex++)
+            for (int trackIndex = 1; trackIndex < midiFile.Chunks.Count; trackIndex++)
             {
                 // Get data values.
                 List<int> noteValues = new List<int>();
@@ -197,17 +197,17 @@ namespace MIDI2Matlab
                     currentTick += track.Events[i].DeltaTime;
                 }
                 // Format data for matlab.
-                str += "voices(" + (trackIndex + 1) + ").noteNumbers = [";
-                str += string.Join(",", Array.ConvertAll(noteValues.ToArray(), x => x.ToString())) + "]\r\n";
-                str += "voices(" + (trackIndex + 1) + ").durations = [";
-                str += string.Join(",", Array.ConvertAll(durrations.ToArray(), x => x.ToString())) + "]\r\n";
-                str += "voices(" + (trackIndex + 1) + ").startPulses = [";
-                str += string.Join(",", Array.ConvertAll(startPulses.ToArray(), x => x.ToString())) + "]\r\n";
-                //str += "voices(" + (trackIndex + 1) + ").velocities = [";
-                //str += string.Join(",", Array.ConvertAll(velocities.ToArray(), x => x.ToString())) + "]\r\n";
-                str += "voices(" + (trackIndex + 1) + ").vowels = '" + vowelsBuilder.ToString() + "'\r\n";
+                str += "voices(" + (trackIndex) + ").noteNumbers = [";
+                str += string.Join(",", Array.ConvertAll(noteValues.ToArray(), x => x.ToString())) + "];\r\n";
+                str += "voices(" + (trackIndex) + ").durations = [";
+                str += string.Join(",", Array.ConvertAll(durrations.ToArray(), x => x.ToString())) + "];\r\n";
+                str += "voices(" + (trackIndex) + ").startPulses = [";
+                str += string.Join(",", Array.ConvertAll(startPulses.ToArray(), x => x.ToString())) + "];\r\n";
+                str += "voices(" + (trackIndex) + ").velocities = [";
+                str += string.Join(",", Array.ConvertAll(velocities.ToArray(), x => x.ToString())) + "];\r\n";
+                str += "voices(" + (trackIndex) + ").vowels = '" + vowelsBuilder.ToString() + "';\r\n";
             }
-            str += "pulseDuration = " + pulseDuration + "\r\n";
+            str += "pulseDuration = " + pulseDuration + ";\r\n";
             return str;
         }
 
